@@ -192,7 +192,7 @@ Remove if exist
 #### Add
 Add after
 ```
-<input _name="stdssl" protocol="tls" port="8089" coreVersion="2"/>
+<input _name="stdssl 8089" protocol="tls" port="8089" coreVersion="2"/>
 ```
 This line. It define that you can connect to takserver with the port 8089 from your tak client
 ```
@@ -200,9 +200,9 @@ This line. It define that you can connect to takserver with the port 8089 from y
 ```
 If you want more port, you can add more
 ```
-<input _name="cassl" auth="x509" protocol="tls" port="18089" />
-<input _name="cassl" auth="x509" protocol="tls" port="38089" />
-<input _name="cassl" auth="x509" protocol="tls" port="58089" />
+<input _name="cassl 18089" auth="x509" protocol="tls" port="18089" />
+<input _name="cassl 38089" auth="x509" protocol="tls" port="38089" />
+<input _name="cassl 58089" auth="x509" protocol="tls" port="58089" />
 ```
 ---
 Add after
