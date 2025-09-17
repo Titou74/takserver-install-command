@@ -1,17 +1,17 @@
 # **Takserver Install Commands**
 Simple readme to explain how to install a takserver on a Ubuntu server
 
-# Good to know
+## Good to know
 All command bellow were tested on september 2025 on an Ubuntu 22.04 LTS server with TakServer 5.5 release 53.
 Commands may not work on future versions.
 
-# Requirements
+## Requirements
 - A server with Ubuntu 22.04 LTS
 - A .deb file from tak.gov - version CORE "UBUNTU" (file mane look like "takserver_5.5-RELEASE53_all.deb")
 - A domain pointing your server
 
-# Install TAK Server
-## Add Postgresql repository (required for takserver)
+## Install TAK Server
+### Add Postgresql repository (required for takserver)
 Create required folder
 ```
 sudo mkdir -p /etc/apt/keyrings
@@ -25,7 +25,7 @@ sudo curl https://www.postgresql.org/media/keys/ACCC4CF8.asc --output /etc/apt/k
 sudo sh -c 'echo "deb [signed-by=/etc/apt/keyrings/postgresql.asc] http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/postgresql.list'
 ```
 
-## Update the systeme
+### Update the systeme
 ```
 sudo apt update
 ```
@@ -38,7 +38,7 @@ If reboot is necessary after some upgrade
 sudo reboot
 ```
 
-## Install takserver
+### Install takserver
 Upload your .deb file on /tmp folder
 
 Install takserver from /tmp
@@ -64,8 +64,8 @@ Enable takserver to automatic start on system startup
 sudo systemctl enable takserver
 ```
 
-# Add SSL certificate with Let's Encrypt
-## Install Let's Encrypt
+## Add SSL certificate with Let's Encrypt
+### Install Let's Encrypt
 Install snap
 ```
 sudo apt install snap
@@ -74,14 +74,14 @@ Install cerbot with snap
 ```
 sudo snap install --classic certbot
 ```
-## Generate certificate for your domain
+### Generate certificate for your domain
 ```
 sudo certbot certonly --standalone
 ```
 SSL files is located on /etc/letsencrypt/live/<yourdomain.ext>/
 
-## Install certificate on takserver
-### Set domain variable
+### Install certificate on takserver
+#### Set domain variable
 You have to set some variables for the next commands. You have to setup the domain pointing your server
 ```
 export domain=<yourdomain.ext>
@@ -91,14 +91,14 @@ This variable have to be the same of you domain, but you have to replace the dot
 export fileName=<yourdomain-ext>
 ```
 
-### Create required folders
+#### Create required folders
 ```
 mkdir /opt/tak/certs/letsencrypt
 ```
 ```
 mkdir /opt/tak/certs/letsencrypt/renew
 ```
-### Generate certificate files
+#### Generate certificate files
 ```
 cd /opt/tak/certs/letsencrypt
 ```
@@ -111,10 +111,12 @@ Import keystore
 ```
 sudo keytool -importkeystore -destkeystore $fileName.jks -srckeystore renew/$fileName.p12 -srcstoretype pkcs12
 ```
-## Configure server certificates
+### Configure server certificates
+Go to certs directory
 ```
 cd /opt/tak/certs
 ```
+Set some variables
 ```
 export STATE=state
 ```
@@ -139,7 +141,7 @@ Restart takserver
 ```
 sudo service takserver restart
 ```
-## Configure admin account
+### Configure admin account
 Create certificate for admin user
 ```
 ./makeCert.sh client <admin-login>
@@ -148,13 +150,13 @@ Create admin user. The password require some complexity: ```minimum of 15 charac
 ```
 java -jar /opt/tak/utils/UserManager.jar usermod -A -p '<admin-password>' <admin-login>
 ```
-## Configure takserver to use the certificate files
+### Configure takserver to use the certificate files
 To do that, you have to update the file ```/opt/tak/CoreConfig.xml```
 ```
 nano /opt/tak/CoreConfig.xml
 ```
-### File modification
-#### Replace
+#### File modification
+##### Replace
 Replace this line
 ```
 <connector port="8446" clientAuth="false" _name="cert_https"/>
@@ -181,7 +183,7 @@ With this line
 ```
 <tls keystore="JKS" keystoreFile="certs/files/takserver.jks" keystorePass="atakatak" truststore="JKS" truststoreFile="certs/files/truststore-intermediate-CA.jks" truststorePass="atakatak" context="TLSv1.2" keymanager="SunX509"/>
 ```
-#### Remove
+##### Remove
 Remove if exist
 ```
 <input auth="anonymous" _name="stdtcp" protocol="tcp" port="8087"/>
@@ -189,7 +191,7 @@ Remove if exist
 <input auth="anonymous" _name="streamtcp" protocol="stcp" port="8088"/>
 <connector port="8080" tls="false" _name="http_plaintext"/>
 ```
-#### Add
+##### Add
 Add after
 ```
 <input _name="stdssl 8089" protocol="tls" port="8089" coreVersion="2"/>
