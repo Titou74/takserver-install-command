@@ -1,6 +1,10 @@
 # takserver-install-command
 Simple readme to explain how to install a takserver on a Ubuntu server
 
+# Good to know
+All command bellow were tested on september 2025 on an Ubuntu 22.04 LTS server with TakServer 5.5 release 53.
+Commands may not work on future versions.
+
 # Requirements
 - A server with Ubuntu 22.04 LTS
 - A .deb file from tak.gov - version CORE "UBUNTU" (file mane look like "takserver_5.5-RELEASE53_all.deb")
