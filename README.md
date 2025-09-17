@@ -1,4 +1,4 @@
-# takserver-install-command
+# **Takserver Install Commands**
 Simple readme to explain how to install a takserver on a Ubuntu server
 
 # Good to know
