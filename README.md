@@ -162,20 +162,20 @@ With (take care: you have to set the domain name with dot replaced by dash)
 ---
 Replace this line
 ```
-<tls keystore="JKS" keystoreFile="certs/files/takserver.jks" keystorePass="atakatak" truststore="JKS" truststoreFile="certs/files/truststore-root.jks" truststorePass="atakatak" context="TLSv1.2" keymanager="SunX509"/>
-```
-With this line
-```
-<tls keystore="JKS" keystoreFile="certs/files/takserver.jks" keystorePass="atakatak" truststore="JKS" truststoreFile="certs/files/truststore-intermediate-CA.jks" truststorePass="atakatak" context="TLSv1.2" keymanager="SunX509"/>
-```
----
-Replace this line
-```
 <auth>
 ```
 With this line
 ```
 <auth x509groups="true" x509addAnonymous="false" x509useGroupCache="true" x509checkRevocation="true">
+```
+---
+Replace this line
+```
+<tls keystore="JKS" keystoreFile="certs/files/takserver.jks" keystorePass="atakatak" truststore="JKS" truststoreFile="certs/files/truststore-root.jks" truststorePass="atakatak" context="TLSv1.2" keymanager="SunX509"/>
+```
+With this line
+```
+<tls keystore="JKS" keystoreFile="certs/files/takserver.jks" keystorePass="atakatak" truststore="JKS" truststoreFile="certs/files/truststore-intermediate-CA.jks" truststorePass="atakatak" context="TLSv1.2" keymanager="SunX509"/>
 ```
 #### Remove
 Remove if exist
