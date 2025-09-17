@@ -107,7 +107,6 @@ Import keystore
 ```
 sudo keytool -importkeystore -destkeystore $fileName.jks -srckeystore renew/$fileName.p12 -srcstoretype pkcs12
 ```
-
 ## Configure server certificates
 ```
 cd /opt/tak/certs
@@ -145,3 +144,87 @@ Create admin user. The password require some complexity: ```minimum of 15 charac
 ```
 java -jar /opt/tak/utils/UserManager.jar usermod -A -p '<admin-password>' <admin-login>
 ```
+## Configure takserver to use the certificate files
+To do that, you have to update the file ```/opt/tak/CoreConfig.xml```
+```
+nano /opt/tak/CoreConfig.xml
+```
+### File modification
+#### Replace
+Replace this line
+```
+<connector port="8446" clientAuth="false" _name="cert_https"/>
+```
+With (take care: you have to set the domain name with dot replaced by dash)
+```
+<connector port="8446" clientAuth="false" _name="cert_https" truststorePass="atakatak" truststoreFile="certs/files/truststore-intermediate-CA.jks" truststore="JKS" keystorePass="atakatak" keystoreFile="certs/letsencrypt/<yourdomain-ext>.jks" keystore="JKS"/>
+```
+---
+Replace this line
+```
+<tls keystore="JKS" keystoreFile="certs/files/takserver.jks" keystorePass="atakatak" truststore="JKS" truststoreFile="certs/files/truststore-root.jks" truststorePass="atakatak" context="TLSv1.2" keymanager="SunX509"/>
+```
+With this line
+```
+<tls keystore="JKS" keystoreFile="certs/files/takserver.jks" keystorePass="atakatak" truststore="JKS" truststoreFile="certs/files/truststore-intermediate-CA.jks" truststorePass="atakatak" context="TLSv1.2" keymanager="SunX509"/>
+```
+---
+Replace this line
+```
+<auth>
+```
+With this line
+```
+<auth x509groups="true" x509addAnonymous="false" x509useGroupCache="true" x509checkRevocation="true">
+```
+#### Remove
+Remove if exist
+```
+<input auth="anonymous" _name="stdtcp" protocol="tcp" port="8087"/>
+<input auth="anonymous" _name="stdudp" protocol="udp" port="8087"/>
+<input auth="anonymous" _name="streamtcp" protocol="stcp" port="8088"/>
+<connector port="8080" tls="false" _name="http_plaintext"/>
+```
+#### Add
+Add after
+```
+<input _name="stdssl" protocol="tls" port="8089" coreVersion="2"/>
+```
+This line. It define that you can connect to takserver with the port 8089 from your tak client
+```
+<input _name="cassl" auth="x509" protocol="tls" port="8089" />
+```
+If you want more port, you can add more
+```
+<input _name="cassl" auth="x509" protocol="tls" port="18089" />
+<input _name="cassl" auth="x509" protocol="tls" port="38089" />
+<input _name="cassl" auth="x509" protocol="tls" port="58089" />
+```
+---
+Add after
+```
+<dissemination smartRetry="false"/>
+```
+This lines
+```
+<certificateSigning CA="TAKServer">
+    <certificateConfig>
+         <nameEntries>
+             <nameEntry name="O" value="TAK"/>
+             <nameEntry name="OU" value="TAK"/>
+         </nameEntries>
+    </certificateConfig>
+    <TAKServerCAConfig keystore="JKS" keystoreFile="/opt/tak/certs/files/intermediate-CA-signing.jks" keystorePass="atakatak" validityDays="30" signatureAlg="SHA256WithRSA"/>
+</certificateSigning>
+```
+
+Save file
+Exit file
+
+Restart server
+```
+sudo systemctl restart takserver
+```
+
+Access to your domain on port 8446 : https://yourdomain.ext:8446/
+It should work. If not, you probably make a mistake on CoreConfig update
