@@ -64,7 +64,7 @@ Enable takserver to automatic start on system startup
 sudo systemctl enable takserver
 ```
 
-## Add SSL certificate with Let's Encrypt
+## Generate SSL certificate with Let's Encrypt
 ### Install Let's Encrypt
 Install snap
 ```
@@ -80,8 +80,8 @@ sudo certbot certonly --standalone
 ```
 SSL files is located on /etc/letsencrypt/live/<yourdomain.ext>/
 
-### Install certificate on takserver
-#### Set domain variable
+## Install certificate on takserver
+### Set domain variable
 You have to set some variables for the next commands. You have to setup the domain pointing your server
 ```
 export domain=<yourdomain.ext>
@@ -91,14 +91,14 @@ This variable have to be the same of you domain, but you have to replace the dot
 export fileName=<yourdomain-ext>
 ```
 
-#### Create required folders
+### Create required folders
 ```
 mkdir /opt/tak/certs/letsencrypt
 ```
 ```
 mkdir /opt/tak/certs/letsencrypt/renew
 ```
-#### Generate certificate files
+### Generate certificate files
 ```
 cd /opt/tak/certs/letsencrypt
 ```
@@ -111,7 +111,7 @@ Import keystore
 ```
 sudo keytool -importkeystore -destkeystore $fileName.jks -srckeystore renew/$fileName.p12 -srcstoretype pkcs12
 ```
-### Configure server certificates
+## Configure server certificates
 Go to certs directory
 ```
 cd /opt/tak/certs
@@ -141,22 +141,9 @@ Restart takserver
 ```
 sudo service takserver restart
 ```
-### Configure admin account
-Create certificate for admin user
-```
-./makeCert.sh client <admin-login>
-```
-Create admin user. The password require some complexity: ```minimum of 15 characters including 1 uppercase, 1 lowercase, 1 number, and 1 special character from this list [-_!@#$%^&*(){}[]+=~`|:;<>,./?]```
-```
-java -jar /opt/tak/utils/UserManager.jar usermod -A -p '<admin-password>' <admin-login>
-```
-### Configure takserver to use the certificate files
-To do that, you have to update the file ```/opt/tak/CoreConfig.xml```
-```
-nano /opt/tak/CoreConfig.xml
-```
-#### File modification
-##### Replace
+### File modification
+#### Replace
+
 Replace this line
 ```
 <connector port="8446" clientAuth="false" _name="cert_https"/>
@@ -183,7 +170,8 @@ With this line
 ```
 <tls keystore="JKS" keystoreFile="certs/files/takserver.jks" keystorePass="atakatak" truststore="JKS" truststoreFile="certs/files/truststore-intermediate-CA.jks" truststorePass="atakatak" context="TLSv1.2" keymanager="SunX509"/>
 ```
-##### Remove
+#### Remove
+
 Remove if exist
 ```
 <input auth="anonymous" _name="stdtcp" protocol="tcp" port="8087"/>
@@ -191,7 +179,8 @@ Remove if exist
 <input auth="anonymous" _name="streamtcp" protocol="stcp" port="8088"/>
 <connector port="8080" tls="false" _name="http_plaintext"/>
 ```
-##### Add
+#### Add
+
 Add after
 ```
 <input _name="stdssl 8089" protocol="tls" port="8089" coreVersion="2"/>
@@ -234,3 +223,31 @@ sudo systemctl restart takserver
 
 Access to your domain on port 8446 : https://yourdomain.ext:8446/
 It should work. If not, you probably make a mistake on CoreConfig update
+
+## Configure admin account
+```
+cd /opt/tak/certs
+```
+Set some variables
+```
+export STATE=state
+```
+```
+export CITY=city
+```
+```
+export ORGANIZATIONAL_UNIT=org_unit
+```
+Create certificate for admin user
+```
+./makeCert.sh client <admin-login>
+```
+Create admin user. The password require some complexity: ```minimum of 15 characters including 1 uppercase, 1 lowercase, 1 number, and 1 special character from this list [-_!@#$%^&*(){}[]+=~`|:;<>,./?]```
+```
+java -jar /opt/tak/utils/UserManager.jar usermod -A -p '<admin-password>' <admin-login>
+```
+### Configure takserver to use the certificate files
+To do that, you have to update the file ```/opt/tak/CoreConfig.xml```
+```
+nano /opt/tak/CoreConfig.xml
+```
