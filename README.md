@@ -46,7 +46,7 @@ Install takserver from /tmp
 cd /tmp
 ```
 ```
-sudo apt install takserver_5.5-RELEASE53_all.deb
+sudo apt install /tmp/takserver_5.5-RELEASE53_all.deb
 ```
 
 Update daemon
