@@ -43,9 +43,6 @@ Upload your .deb file on /tmp folder
 
 Install takserver from /tmp
 ```
-cd /tmp
-```
-```
 sudo apt install /tmp/takserver_5.5-RELEASE53_all.deb
 ```
 
